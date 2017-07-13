@@ -15,15 +15,12 @@ namespace PanWebsite
         protected Thread WebsiteThread;
 
         public delegate PanResponse OnRequest(PanRequest request);
-        protected bool issipmle;
         protected OnRequest onRequest;
 
         public PanWebsite(string[] prefixes, OnRequest request)
         {
             this.Prefixes = prefixes;
             this.onRequest = request;
-
-            issipmle = false;
         }
 
         public void Start()
