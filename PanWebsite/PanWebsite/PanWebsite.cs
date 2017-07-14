@@ -22,6 +22,11 @@ namespace PanWebsite
             this.Prefixes = prefixes;
             this.onRequest = request;
         }
+        public PanWebsite(string prefixe, OnRequest request)
+        {
+            this.Prefixes = new string[] { prefixe };
+            this.onRequest = request;
+        }
 
         public void Start()
         {
@@ -49,6 +54,10 @@ namespace PanWebsite
                 Listener.Close();
                 Listener.Stop();
                 WebsiteThread.Abort();
+            }
+            catch (ThreadAbortException ex)
+            {
+                //
             }
             catch (Exception ex)
             {
@@ -113,17 +122,32 @@ namespace PanWebsite
                         context.Response.StatusCode = code;
 
                         // SET Cookies
+                        //CookieCollection resp_cookies = new CookieCollection();
                         context.Response.Cookies = new CookieCollection();
-                        string[] c_keys = new string[response.Cookies.Keys.Count]; response.Cookies.Keys.CopyTo(c_keys, 0);
-                        string[] c_vals = new string[response.Cookies.Values.Count]; response.Cookies.Values.CopyTo(c_vals, 0);
+                        string[] c_keys = new string[response.Cookies.Count]; response.Cookies.Keys.CopyTo(c_keys, 0);
+                        string[] c_vals = new string[response.Cookies.Count]; response.Cookies.Values.CopyTo(c_vals, 0);
                         for (int i = 0; i < response.Cookies.Count; i++)
                         {
-                            context.Response.Cookies.Add(new Cookie(c_keys[i], c_vals[i]));
+                            //resp_cookies.Add(new Cookie(c_keys[i], c_vals[i]));
+                            //context.Response.Cookies.Add(new Cookie(c_keys[i], c_vals[i]));
+                            //Console.WriteLine("{0}: {1}", c_keys[i], c_vals[i]);
+                            Cookie c = new Cookie();
+                            c.Name = c_keys[i];
+                            c.Value = c_vals[i];
+                            c.Expires = DateTime.Now + (new TimeSpan(24, 0, 0));
+                            context.Response.AppendCookie(c);
+                            //context.Response.Cookies.Add(c);
                         }
+                        //context.Response.Cookies = resp_cookies;
+                        //var a = context.Response.Cookies;
+                        //var a1 = a["key3"];
+                        //var a2 = a["key31"];
 
                         //dohere 
+                        //context.Response.ContentLength64 = buffer.Length;
                         output.Write(buffer, 0, buffer.Length);
                         output.Close();
+                        context.Response.Close();
                     });
                 }
             }
