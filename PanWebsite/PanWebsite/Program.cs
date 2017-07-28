@@ -35,6 +35,7 @@ namespace PanWebsite
                 case "addr32": text = "address 32"; break;
                 case "addr33": text = "address 33"; break;
                 case "addr4": text = "address 4"; code = 404; break;
+                case "post": text = ""; Console.WriteLine(request.PostData()["suggest"]); break;
                 case "testpost": text = File.ReadAllText(@"D:\PanWebsite\PanWebsite\index.pwhtml"); break;
                 default: text = "else"; break;
             }

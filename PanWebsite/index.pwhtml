@@ -6,7 +6,7 @@
 $(document).ready(function(){
     $("input").keyup(function(){
         var txt = $("input").val();
-        $.post("/post", {suggest: txt}, function(result){
+        $.post("/post", {suggest: txt, key1: "val1", key2: 3, key3: false}, function(result){
             $("span").html(result);
         });
     });

@@ -79,9 +79,6 @@ namespace PanWebsite
 
                         // GET body
                         Stream inputstream = context.Request.InputStream;
-                        StreamReader inputstreamreader = new StreamReader(inputstream); //
-                        string inputstring = inputstreamreader.ReadToEnd(); //
-                        //Console.WriteLine(inputstring); //
 
                         // GET Address and Data
                         string[] address = context.Request.Url.AbsolutePath
@@ -99,26 +96,6 @@ namespace PanWebsite
                                 data.Add(key, val);
                             }
                         }
-                        //string addr = context.Request.RawUrl;
-                        //string address = "";
-                        //Dictionary<string, string> data = new Dictionary<string, string>();
-                        //if (addr.Contains("?"))
-                        //{
-                        //    string[] addr_splitted = addr.Split('?');
-                        //    address = addr_splitted[0];
-                        //    string[] data_str = addr_splitted[1].Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-                        //    foreach (string kv in data_str)
-                        //    {
-                        //        string[] kv_splitted = kv.Split('=');
-                        //        string key = kv_splitted[0];
-                        //        string val = kv_splitted[1];
-                        //        data.Add(key, val);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    address = addr;
-                        //}
 
                         // GET Method
                         string method = context.Request.HttpMethod;
@@ -175,7 +152,21 @@ namespace PanWebsite
         }
         public Dictionary<string, string> PostData()
         {
-            return null;
+            Dictionary<string, string> postdata = new Dictionary<string, string>();
+            StreamReader inputstreamreader = new StreamReader(this.InputStream);
+            string inputstring = inputstreamreader.ReadToEnd();
+            if (inputstring.Length > 0)
+            {
+                string[] postdata_str = inputstring.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string kv in postdata_str)
+                {
+                    string[] kv_splitted = kv.Split('=');
+                    string key = kv_splitted[0];
+                    string val = kv_splitted[1];
+                    postdata.Add(key, val);
+                }
+            }
+            return postdata;
         }
     }
     public class PanResponse
