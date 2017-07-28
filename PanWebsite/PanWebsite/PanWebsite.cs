@@ -51,10 +51,10 @@ namespace PanWebsite
         {
             try
             {
-                Listener.Close();
                 Listener.Stop();
+                Listener.Close();
                 WebsiteThread.Abort();
-            }
+        }
             catch (ThreadAbortException ex)
             {
                 //
@@ -77,15 +77,20 @@ namespace PanWebsite
                         Stream output = context.Response.OutputStream;
                         byte[] buffer;
 
+                        // GET body
+                        Stream inputstream = context.Request.InputStream;
+                        StreamReader inputstreamreader = new StreamReader(inputstream); //
+                        string inputstring = inputstreamreader.ReadToEnd(); //
+                        //Console.WriteLine(inputstring); //
+
                         // GET Address and Data
-                        string addr = context.Request.RawUrl;
-                        string address = "";
+                        string[] address = context.Request.Url.AbsolutePath
+                            .Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         Dictionary<string, string> data = new Dictionary<string, string>();
-                        if (addr.Contains("?"))
+                        if(context.Request.Url.Query.Length > 1)
                         {
-                            string[] addr_splitted = addr.Split('?');
-                            address = addr_splitted[0];
-                            string[] data_str = addr_splitted[1].Split('&');
+                            string[] data_str = context.Request.Url.Query.Remove(0, 1)
+                                .Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
                             foreach (string kv in data_str)
                             {
                                 string[] kv_splitted = kv.Split('=');
@@ -94,24 +99,31 @@ namespace PanWebsite
                                 data.Add(key, val);
                             }
                         }
-                        else
-                        {
-                            address = addr;
-                        }
+                        //string addr = context.Request.RawUrl;
+                        //string address = "";
+                        //Dictionary<string, string> data = new Dictionary<string, string>();
+                        //if (addr.Contains("?"))
+                        //{
+                        //    string[] addr_splitted = addr.Split('?');
+                        //    address = addr_splitted[0];
+                        //    string[] data_str = addr_splitted[1].Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                        //    foreach (string kv in data_str)
+                        //    {
+                        //        string[] kv_splitted = kv.Split('=');
+                        //        string key = kv_splitted[0];
+                        //        string val = kv_splitted[1];
+                        //        data.Add(key, val);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    address = addr;
+                        //}
 
                         // GET Method
                         string method = context.Request.HttpMethod;
 
-                        // GET Cookies
-                        Dictionary<string, string> cookies = new Dictionary<string, string>();
-                        Cookie[] cookies_original = new Cookie[context.Request.Cookies.Count];
-                        context.Request.Cookies.CopyTo(cookies_original, 0);
-                        foreach (Cookie c in cookies_original)
-                        {
-                            cookies.Add(c.Name, c.Value);
-                        }
-
-                        PanRequest request = new PanRequest(address, method, data, cookies);
+                        PanRequest request = new PanRequest(address, method, data, inputstream);
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Text
@@ -120,31 +132,8 @@ namespace PanWebsite
                         // SET Code
                         int code = response.Code;
                         context.Response.StatusCode = code;
-
-                        // SET Cookies
-                        //CookieCollection resp_cookies = new CookieCollection();
-                        context.Response.Cookies = new CookieCollection();
-                        string[] c_keys = new string[response.Cookies.Count]; response.Cookies.Keys.CopyTo(c_keys, 0);
-                        string[] c_vals = new string[response.Cookies.Count]; response.Cookies.Values.CopyTo(c_vals, 0);
-                        for (int i = 0; i < response.Cookies.Count; i++)
-                        {
-                            //resp_cookies.Add(new Cookie(c_keys[i], c_vals[i]));
-                            //context.Response.Cookies.Add(new Cookie(c_keys[i], c_vals[i]));
-                            //Console.WriteLine("{0}: {1}", c_keys[i], c_vals[i]);
-                            Cookie c = new Cookie();
-                            c.Name = c_keys[i];
-                            c.Value = c_vals[i];
-                            c.Expires = DateTime.Now + (new TimeSpan(24, 0, 0));
-                            context.Response.AppendCookie(c);
-                            //context.Response.Cookies.Add(c);
-                        }
-                        //context.Response.Cookies = resp_cookies;
-                        //var a = context.Response.Cookies;
-                        //var a1 = a["key3"];
-                        //var a2 = a["key31"];
-
-                        //dohere 
-                        //context.Response.ContentLength64 = buffer.Length;
+                         
+                        context.Response.ContentLength64 = buffer.Length;
                         output.Write(buffer, 0, buffer.Length);
                         output.Close();
                         context.Response.Close();
@@ -173,41 +162,41 @@ namespace PanWebsite
 
     public class PanRequest
     {
-        public readonly string Address;
+        public readonly string[] Address;
         public readonly string Method;
         public readonly Dictionary<string, string> Data;
-        public readonly Dictionary<string, string> Cookies;
-        public PanRequest(string address, string method, Dictionary<string, string> data, Dictionary<string, string> cookies)
+        public readonly Stream InputStream;
+        public PanRequest(string[] address, string method, Dictionary<string, string> data, Stream inputStream)
         {
             this.Address = address;
             this.Method = method;
             this.Data = data;
-            this.Cookies = cookies;
+            this.InputStream = inputStream;
+        }
+        public Dictionary<string, string> PostData()
+        {
+            return null;
         }
     }
     public class PanResponse
     {
         public string ResponseText;
         public int Code;
-        public Dictionary<string, string> Cookies;
 
-        public PanResponse(string responseText, int code, Dictionary<string, string> cookies)
+        public PanResponse(string responseText, int code)
         {
             this.ResponseText = responseText;
             this.Code = code;
-            this.Cookies = cookies;
         }
-        public PanResponse(string responseText, Dictionary<string, string> cookies)
+        public PanResponse(string responseText)
         {
             this.ResponseText = responseText;
             this.Code = 200;
-            this.Cookies = cookies;
         }
-        public PanResponse(int code, Dictionary<string, string> cookies)
+        public PanResponse(int code)
         {
             this.ResponseText = "";
             this.Code = code;
-            this.Cookies = cookies;
         }
     }
 }
