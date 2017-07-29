@@ -25,22 +25,32 @@ namespace PanWebsite
             string text = "hello!";
             int code = 200;
 
-            //Console.WriteLine("Segms: ", request.Address.Length);
+            var cookies = new Dictionary<string, string>();
+
             switch (request.Address[0])
             {
-                case "addr1": text = "address 1"; break;
-                case "addr2": text = "address 2"; break;
-                case "addr3": text = "address 3"; break;
-                case "addr31": text = "address 31"; Console.WriteLine(request.Data["hello"]); break;
-                case "addr32": text = "address 32"; break;
-                case "addr33": text = "address 33"; break;
+                case "test": text = "test data"; break;
+                case "getdata": text = "GET data"; Console.WriteLine(request.Data["hello"]); break;
                 case "addr4": text = "address 4"; code = 404; break;
                 case "post": text = ""; Console.WriteLine(request.PostData()["suggest"]); break;
                 case "testpost": text = File.ReadAllText(@"D:\PanWebsite\PanWebsite\index.pwhtml"); break;
+                case "cookies":
+                    if(request.Address[1] == "get")
+                    {
+                        Console.WriteLine(request.Cookies[request.Address[2]]);
+                    }
+                    if (request.Address[1] == "set")
+                    {
+                        if(request.Address[3] == "null")
+                            cookies.Add(request.Address[2], "");
+                        else
+                            cookies.Add(request.Address[2], request.Address[3]);
+                    }
+                    break;
                 default: text = "else"; break;
             }
 
-            PanResponse response = new PanResponse(text, code);
+            PanResponse response = new PanResponse(text, code, cookies);
             return response;
         }
     }

@@ -54,7 +54,7 @@ namespace PanWebsite
                 Listener.Stop();
                 Listener.Close();
                 WebsiteThread.Abort();
-        }
+            }
             catch (ThreadAbortException ex)
             {
                 //
@@ -77,23 +77,14 @@ namespace PanWebsite
                         Stream output = context.Response.OutputStream;
                         byte[] buffer;
 
-                        // GET Body
+                        // GET body
                         Stream inputstream = context.Request.InputStream;
-
-                        // GET Cookies
-                        Dictionary<string, string> cookies = new Dictionary<string, string>();
-                        Cookie[] realcookies = new Cookie[context.Request.Cookies.Count];
-                        context.Request.Cookies.CopyTo(realcookies, 0);
-                        foreach (var c in realcookies)
-                        {
-                            cookies.Add(c.Name, c.Value);
-                        }
 
                         // GET Address and Data
                         string[] address = context.Request.Url.AbsolutePath
                             .Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         Dictionary<string, string> data = new Dictionary<string, string>();
-                        if(context.Request.Url.Query.Length > 1)
+                        if (context.Request.Url.Query.Length > 1)
                         {
                             string[] data_str = context.Request.Url.Query.Remove(0, 1)
                                 .Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
@@ -109,7 +100,7 @@ namespace PanWebsite
                         // GET Method
                         string method = context.Request.HttpMethod;
 
-                        PanRequest request = new PanRequest(address, method, data, inputstream, cookies);
+                        PanRequest request = new PanRequest(address, method, data, inputstream);
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Text
@@ -118,16 +109,6 @@ namespace PanWebsite
                         // SET Code
                         int code = response.Code;
                         context.Response.StatusCode = code;
-
-                        // SET Cookies
-                        string[] cnames = new string[response.Cookies.Keys.Count];
-                        response.Cookies.Keys.CopyTo(cnames, 0);
-                        string[] cvalues = new string[response.Cookies.Values.Count];
-                        response.Cookies.Values.CopyTo(cvalues, 0);
-                        for (int i = 0; i < response.Cookies.Count; i++)
-                        {
-                            context.Response.Headers.Add("Set-Cookie", (cnames[i] + "=" + cvalues[i]));
-                        }
 
                         context.Response.ContentLength64 = buffer.Length;
                         output.Write(buffer, 0, buffer.Length);
@@ -162,14 +143,12 @@ namespace PanWebsite
         public readonly string Method;
         public readonly Dictionary<string, string> Data;
         public readonly Stream InputStream;
-        public readonly Dictionary<string, string> Cookies;
-        public PanRequest(string[] address, string method, Dictionary<string, string> data, Stream inputStream, Dictionary<string, string> cookies)
+        public PanRequest(string[] address, string method, Dictionary<string, string> data, Stream inputStream)
         {
             this.Address = address;
             this.Method = method;
             this.Data = data;
             this.InputStream = inputStream;
-            this.Cookies = cookies;
         }
         public Dictionary<string, string> PostData()
         {
@@ -194,37 +173,21 @@ namespace PanWebsite
     {
         public string ResponseText;
         public int Code;
-        public Dictionary<string, string> Cookies;
 
-        public PanResponse(string responseText = "", int code = 200, Dictionary<string, string> cookies = null)
+        public PanResponse(string responseText, int code)
         {
             this.ResponseText = responseText;
             this.Code = code;
-            this.Cookies = cookies;
         }
-        //public PanResponse(string responseText)
-        //{
-        //    this.ResponseText = responseText;
-        //    this.Code = 200;
-        //}
-        //public PanResponse(int code)
-        //{
-        //    this.ResponseText = "";
-        //    this.Code = code;
-        //}
-    }
-    public class PanCookie
-    {
-        public string Name;
-        public string Value;
-        public string Path;
-        public string Expires;
-        public PanCookie(string name, string value, string path="/", string expires = "")
+        public PanResponse(string responseText)
         {
-            this.Name = name;
-            this.Value = value;
-            this.Path = path;
-            this.Expires = expires;
+            this.ResponseText = responseText;
+            this.Code = 200;
+        }
+        public PanResponse(int code)
+        {
+            this.ResponseText = "";
+            this.Code = code;
         }
     }
 }
