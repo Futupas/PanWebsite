@@ -25,7 +25,7 @@ namespace PanWebsite
             string text = "hello!";
             int code = 200;
 
-            var cookies = new Dictionary<string, string>();
+            var cookies = new List<PanCookie>();
 
             switch (request.Address[0])
             {
@@ -37,14 +37,15 @@ namespace PanWebsite
                 case "cookies":
                     if(request.Address[1] == "get")
                     {
-                        Console.WriteLine(request.Cookies[request.Address[2]]);
+                        Console.WriteLine(request.Cookies.Where(c => c.Name == request.Address[2]).First().Value);
+                        //request.Cookies.Where(c => c.Name == request.Address[2]).First().Value;
                     }
                     if (request.Address[1] == "set")
                     {
                         if(request.Address[3] == "null")
-                            cookies.Add(request.Address[2], "");
+                            cookies.Add(new PanCookie(request.Address[2], null, "./"));
                         else
-                            cookies.Add(request.Address[2], request.Address[3]);
+                            cookies.Add(new PanCookie(request.Address[2], request.Address[3], "./"));
                     }
                     break;
                 default: text = "else"; break;
