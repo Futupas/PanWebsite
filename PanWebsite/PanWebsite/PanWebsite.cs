@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 
 namespace PanWebsite
@@ -159,11 +160,21 @@ namespace PanWebsite
 
     public class PanRequest
     {
-        public readonly string[] Address;
+        public readonly string[] Address; //Set as a Property
         public readonly string Method;
-        public readonly Dictionary<string, string> Data;
+        public readonly Dictionary<string, string> Data; //Set as a Property
         public readonly Stream InputStream;
         public readonly List<PanCookie> Cookies;
+        public readonly bool HasEntityBody; //
+        public readonly string[] AcceptTypes; //
+        public readonly Encoding ContentEncoding; //
+        public readonly string ContentType; //
+        public readonly Dictionary<string, string[]> Headers; //
+        public readonly bool IsLocal; //
+        public readonly string UserAgent; //
+        public readonly string[] UserLanguages; //
+        public readonly string Url; //
+
         public PanRequest(string[] address, string method, Dictionary<string, string> data, Stream inputStream, List<PanCookie> cookies)
         {
             this.Address = address;
@@ -172,7 +183,7 @@ namespace PanWebsite
             this.InputStream = inputStream;
             this.Cookies = cookies;
         }
-        public Dictionary<string, string> PostData()
+        public Dictionary<string, string> PostData() // Set as a Property
         {
             Dictionary<string, string> postdata = new Dictionary<string, string>();
             StreamReader inputstreamreader = new StreamReader(this.InputStream);
@@ -190,6 +201,10 @@ namespace PanWebsite
             }
             return postdata;
         }
+
+        //public Dictionary<string, string> PostData { get { } }
+        //public string[] Address { get { } }
+        //public Dictionary<string, string> Data { get { } }
     }
     public class PanResponse
     {
