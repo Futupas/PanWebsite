@@ -1,6 +1,5 @@
-D:\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.exe.config
-D:\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.exe
+D:\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.dll
 D:\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.pdb
 D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.csprojResolveAssemblyReference.cache
-D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.exe
+D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.dll
 D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.pdb

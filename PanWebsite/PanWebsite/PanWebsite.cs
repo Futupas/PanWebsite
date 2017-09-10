@@ -54,7 +54,7 @@ namespace PanWebsite
                 Listener.Stop();
                 Listener.Close();
                 WebsiteThread.Abort();
-        }
+            }
             catch (ThreadAbortException ex)
             {
                 //
@@ -91,7 +91,7 @@ namespace PanWebsite
                         string[] address = context.Request.Url.AbsolutePath
                             .Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                         Dictionary<string, string> data = new Dictionary<string, string>();
-                        if(context.Request.Url.Query.Length > 1)
+                        if (context.Request.Url.Query.Length > 1)
                         {
                             string[] data_str = context.Request.Url.Query.Remove(0, 1)
                                 .Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
@@ -220,7 +220,7 @@ namespace PanWebsite
         public string Value;
         public string Path;
         public DateTime? Expires;
-        public PanCookie(string name, string value, string path="/", DateTime? expires = null)
+        public PanCookie(string name, string value, string path = "/", DateTime? expires = null)
         {
             this.Name = name;
             this.Value = value;

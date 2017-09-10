@@ -1,4 +1,0 @@
-D:\PanWebsite\PanWebsite\Library\bin\Release\Library.dll
-D:\PanWebsite\PanWebsite\Library\bin\Release\Library.pdb
-D:\PanWebsite\PanWebsite\Library\obj\Release\Library.dll
-D:\PanWebsite\PanWebsite\Library\obj\Release\Library.pdb

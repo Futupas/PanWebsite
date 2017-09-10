@@ -1,0 +1,4 @@
+D:\PanWebsite\PanWebsite\PanWebsite\bin\Release\PanWebsite.dll
+D:\PanWebsite\PanWebsite\PanWebsite\bin\Release\PanWebsite.pdb
+D:\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.dll
+D:\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.pdb
