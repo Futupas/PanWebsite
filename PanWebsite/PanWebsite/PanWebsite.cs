@@ -82,12 +82,6 @@ namespace PanWebsite
 
                         // GET Cookies
                         List<PanCookie> cookies = new List<PanCookie>();
-                        //Cookie[] realcookies = new Cookie[context.Request.Cookies.Count];
-                        //context.Request.Cookies.CopyTo(realcookies, 0);
-                        //foreach (var c in realcookies)
-                        //{
-                        //    cookies.Add(new Cookie());
-                        //}
                         foreach (Cookie c in context.Request.Cookies)
                         {
                             cookies.Add(new PanCookie(c.Name, c.Value, c.Path, c.Expires));
@@ -124,14 +118,6 @@ namespace PanWebsite
                         context.Response.StatusCode = code;
 
                         // SET Cookies
-                        //string[] cnames = new string[response.Cookies.Keys.Count];
-                        //response.Cookies.Keys.CopyTo(cnames, 0);
-                        //string[] cvalues = new string[response.Cookies.Values.Count];
-                        //response.Cookies.Values.CopyTo(cvalues, 0);
-                        //for (int i = 0; i < response.Cookies.Count; i++)
-                        //{
-                        //    context.Response.Headers.Add("Set-Cookie", (cnames[i] + "=" + cvalues[i]));
-                        //}
                         foreach (PanCookie c in response.Cookies)
                         {
                             string cookie = "";

@@ -38,7 +38,6 @@ namespace PanWebsite
                     if(request.Address[1] == "get")
                     {
                         Console.WriteLine(request.Cookies.Where(c => c.Name == request.Address[2]).First().Value);
-                        //request.Cookies.Where(c => c.Name == request.Address[2]).First().Value;
                     }
                     if (request.Address[1] == "set")
                     {

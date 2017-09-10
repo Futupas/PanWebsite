@@ -2,3 +2,4 @@ D:\PanWebsite\PanWebsite\Library\bin\Debug\Library.dll
 D:\PanWebsite\PanWebsite\Library\bin\Debug\Library.pdb
 D:\PanWebsite\PanWebsite\Library\obj\Debug\Library.dll
 D:\PanWebsite\PanWebsite\Library\obj\Debug\Library.pdb
+D:\PanWebsite\PanWebsite\Library\obj\Debug\Library.csprojResolveAssemblyReference.cache
