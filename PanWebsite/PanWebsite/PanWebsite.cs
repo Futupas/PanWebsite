@@ -160,9 +160,8 @@ namespace PanWebsite
 
     public class PanRequest
     {
-        public readonly string[] Address; //Set as a Property
         public readonly string Method;
-        public readonly Dictionary<string, string> Data; //Set as a Property
+        public readonly string Url; //
         public readonly Stream InputStream;
         public readonly List<PanCookie> Cookies;
         public readonly bool HasEntityBody; //
@@ -173,38 +172,118 @@ namespace PanWebsite
         public readonly bool IsLocal; //
         public readonly string UserAgent; //
         public readonly string[] UserLanguages; //
-        public readonly string Url; //
 
-        public PanRequest(string[] address, string method, Dictionary<string, string> data, Stream inputStream, List<PanCookie> cookies)
+        public PanRequest()
         {
-            this.Address = address;
-            this.Method = method;
-            this.Data = data;
-            this.InputStream = inputStream;
-            this.Cookies = cookies;
+            this.Method = "GET";
+            this.Url = "";
+            this.InputStream = null;
+            this.Cookies = new List<PanCookie>();
+            this.HasEntityBody = false;
+            this.AcceptTypes = null;
+            this.ContentEncoding = Encoding.UTF8;
+            this.ContentType = "text/html";
+            this.Headers = new Dictionary<string, string[]>();
+            this.IsLocal = true;
+            this.UserAgent = "";
+            this.UserLanguages = null;
         }
-        public Dictionary<string, string> PostData() // Set as a Property
+        public PanRequest(
+            string Method,
+            string Url, /**/
+            Stream InputStream,
+            List<PanCookie> Cookies,
+            bool HasEntityBody, /**/
+            string[] AcceptTypes, /**/
+            Encoding ContentEncoding, /**/
+            string ContentType, /**/
+            Dictionary<string, string[]> Headers, /**/
+            bool IsLocal, /**/
+            string UserAgent, /**/
+            string[] UserLanguages /**/)
         {
-            Dictionary<string, string> postdata = new Dictionary<string, string>();
-            StreamReader inputstreamreader = new StreamReader(this.InputStream);
-            string inputstring = inputstreamreader.ReadToEnd();
-            if (inputstring.Length > 0)
+            this.Method = Method;
+            this.Url = Url;
+            this.InputStream = InputStream;
+            this.Cookies = Cookies;
+            this.HasEntityBody = HasEntityBody;
+            this.AcceptTypes = AcceptTypes;
+            this.ContentEncoding = ContentEncoding;
+            this.ContentType = ContentType;
+            this.Headers = Headers;
+            this.IsLocal = IsLocal;
+            this.UserAgent = UserAgent;
+            this.UserLanguages = UserLanguages;
+        }
+
+        public Dictionary<string, string> PostData
+        {
+            get
             {
-                string[] postdata_str = inputstring.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string kv in postdata_str)
+                Dictionary<string, string> postdata = new Dictionary<string, string>();
+                StreamReader inputstreamreader = new StreamReader(this.InputStream);
+                string inputstring = inputstreamreader.ReadToEnd();
+                if (inputstring.Length > 0)
                 {
-                    string[] kv_splitted = kv.Split('=');
-                    string key = kv_splitted[0];
-                    string val = kv_splitted[1];
-                    postdata.Add(key, val);
+                    string[] postdata_str = inputstring.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string kv in postdata_str)
+                    {
+                        string[] kv_splitted = kv.Split('=');
+                        string key = kv_splitted[0];
+                        string val = kv_splitted[1];
+                        postdata.Add(key, val);
+                    }
                 }
+                return postdata;
             }
-            return postdata;
         }
-
-        //public Dictionary<string, string> PostData { get { } }
-        //public string[] Address { get { } }
-        //public Dictionary<string, string> Data { get { } }
+        public string[] Address
+        {
+            get
+            {
+                string addr_str;
+                if (this.Url.Contains("?"))
+                {
+                    addr_str = this.Url.Split("?".ToCharArray())[0];
+                } else
+                {
+                    addr_str = this.Url;
+                }
+                string[] addr_arr = addr_str.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                return addr_arr;
+            }
+        }
+        public Dictionary<string, string> Data
+        {
+            get
+            {
+                string data_str = "";
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                if (this.Url.Contains("?"))
+                {
+                    data_str = this.Url.Split("?".ToCharArray())[0];
+                    if (data_str.Length > 0)
+                    {
+                        string[] data_arr = data_str.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string kv in data_arr)
+                        {
+                            string[] kv_splitted = kv.Split('=');
+                            string key = kv_splitted[0];
+                            string val = kv_splitted[1];
+                            data.Add(key, val);
+                        }
+                    }
+                }
+                return data;
+            }
+        }
+        public FileStream InputFile
+        {
+            get
+            {
+                //
+            }
+        }
     }
     public class PanResponse
     {
