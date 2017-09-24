@@ -78,9 +78,6 @@ namespace PanWebsite
                         Stream output = context.Response.OutputStream;
                         byte[] buffer;
 
-                        // GET Body
-                        Stream inputstream = context.Request.InputStream;
-
                         // GET Cookies
                         List<PanCookie> cookies = new List<PanCookie>();
                         foreach (Cookie c in context.Request.Cookies)
@@ -88,27 +85,28 @@ namespace PanWebsite
                             cookies.Add(new PanCookie(c.Name, c.Value, c.Path, c.Expires));
                         }
 
-                        // GET Address and Data
-                        string[] address = context.Request.Url.AbsolutePath
-                            .Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        Dictionary<string, string> data = new Dictionary<string, string>();
-                        if (context.Request.Url.Query.Length > 1)
+                        // GET Headers
+                        Dictionary<string, string[]> headers = new Dictionary<string, string[]>();
+                        System.Collections.Specialized.NameValueCollection cheaders = context.Request.Headers;
+                        foreach (string key in cheaders.AllKeys)
                         {
-                            string[] data_str = context.Request.Url.Query.Remove(0, 1)
-                                .Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-                            foreach (string kv in data_str)
-                            {
-                                string[] kv_splitted = kv.Split('=');
-                                string key = kv_splitted[0];
-                                string val = kv_splitted[1];
-                                data.Add(key, val);
-                            }
+                            string current_key = key;
+                            string[] currentvalues = cheaders.GetValues(current_key);
                         }
 
-                        // GET Method
-                        string method = context.Request.HttpMethod;
+                        // GET Data
+                        string url = context.Request.RawUrl; // Url
+                        string method = context.Request.HttpMethod; // Method
+                        Stream inputStream = context.Request.InputStream; // Body
+                        bool hasEntityBody = context.Request.HasEntityBody; // Has Entity Body
+                        string[] acceptTypes = context.Request.AcceptTypes; // Accept Types
+                        Encoding contentEncoding = context.Request.ContentEncoding; // Content Encoding
+                        string contentType = context.Request.ContentType; // Content Type
+                        bool isLocal = context.Request.IsLocal; // Is Local
+                        string userAgent = context.Request.UserAgent; // User Agent
+                        string[] userLanguages = context.Request.UserLanguages; // User Languages
 
-                        PanRequest request = new PanRequest(address, method, data, inputstream, cookies);
+                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages);
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Text
@@ -277,36 +275,65 @@ namespace PanWebsite
                 return data;
             }
         }
-        public FileStream InputFile
-        {
-            get
-            {
-                //
-            }
-        }
+        //public FileStream InputFile { get { } }
     }
     public class PanResponse
     {
-        public string ResponseText;
+        public Stream OutputStream;
         public int Code;
         public List<PanCookie> Cookies;
+        public Dictionary<string, string[]> Headers;
+        Encoding ContentEncoding;
 
-        public PanResponse(string responseText = "", int code = 200, List<PanCookie> cookies = null)
+        public PanResponse()
         {
-            this.ResponseText = responseText;
+            this.OutputStream = new MemoryStream();
+            this.Code = 200;
+            this.Cookies = new List<PanCookie>();
+            this.Headers = new Dictionary<string, string[]>();
+            this.ContentEncoding = Encoding.UTF8;
+    }
+        public PanResponse(Stream stream, int code, Encoding contentEncoding, List<PanCookie> cookies, Dictionary<string, string[]> headers)
+        {
+            this.OutputStream = stream;
             this.Code = code;
             this.Cookies = cookies;
+            this.Headers = headers;
+            this.ContentEncoding = contentEncoding;
         }
-        //public PanResponse(string responseText)
-        //{
-        //    this.ResponseText = responseText;
-        //    this.Code = 200;
-        //}
-        //public PanResponse(int code)
-        //{
-        //    this.ResponseText = "";
-        //    this.Code = code;
-        //}
+
+        public static PanResponse ReturnContent(string content, Encoding contentEncoding, List<PanCookie> cookies = null) //Return string (content)
+        {
+            return new PanResponse(new MemoryStream(contentEncoding.GetBytes(content)), 200, contentEncoding, cookies, null);
+        }
+        public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnHtml(string path, Encoding contentEncoding, List<PanCookie> cookies = null) // Return Html page
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnFile(Stream file, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnCode(int code) //Return error
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnCode(int code, Encoding contentEncoding, string content) //Return error with page
+        {
+            return new PanResponse();
+        }
+        public static PanResponse ReturnRedirect(string destination) //Return redirect
+        {
+            return new PanResponse();
+        }
     }
     public class PanCookie
     {
