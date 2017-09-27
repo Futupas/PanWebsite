@@ -284,6 +284,7 @@ namespace PanWebsite
         public List<PanCookie> Cookies;
         public Dictionary<string, string[]> Headers;
         Encoding ContentEncoding;
+        public string MIME;
 
         public PanResponse()
         {
@@ -293,22 +294,25 @@ namespace PanWebsite
             this.Headers = new Dictionary<string, string[]>();
             this.ContentEncoding = Encoding.UTF8;
     }
-        public PanResponse(Stream stream, int code, Encoding contentEncoding, List<PanCookie> cookies, Dictionary<string, string[]> headers)
+        public PanResponse(Stream stream, int code, Encoding contentEncoding, List<PanCookie> cookies, Dictionary<string, string[]> headers, string mime)
         {
             this.OutputStream = stream;
             this.Code = code;
             this.Cookies = cookies;
             this.Headers = headers;
             this.ContentEncoding = contentEncoding;
+            this.MIME = mime;
         }
 
         public static PanResponse ReturnContent(string content, Encoding contentEncoding, List<PanCookie> cookies = null) //Return string (content)
         {
-            return new PanResponse(new MemoryStream(contentEncoding.GetBytes(content)), 200, contentEncoding, cookies, null);
+            Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
+            return new PanResponse(stream, 200, contentEncoding, cookies, null, "text/html");
         }
         public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
         {
-            return new PanResponse();
+            Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(o)));
+            return new PanResponse(stream, 200, Encoding.UTF8, cookies, null, "application/json");
         }
         public static PanResponse ReturnHtml(string path, Encoding contentEncoding, List<PanCookie> cookies = null) // Return Html page
         {
