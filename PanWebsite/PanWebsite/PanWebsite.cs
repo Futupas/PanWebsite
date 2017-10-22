@@ -110,11 +110,16 @@ namespace PanWebsite
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Text
-                        buffer = System.Text.Encoding.UTF8.GetBytes(response.ResponseText);
+                        //buffer = System.Text.Encoding.UTF8.GetBytes(response.OutputStream);
 
                         // SET Code
                         int code = response.Code;
                         context.Response.StatusCode = code;
+
+                        // SET
+                        context.Response.ContentType = response.MIME;
+                        //context.Response.
+                        //response.
 
                         // SET Cookies
                         foreach (PanCookie c in response.Cookies)
@@ -129,8 +134,9 @@ namespace PanWebsite
                             context.Response.Headers.Add("Set-Cookie", cookie);
                         }
 
-                        context.Response.ContentLength64 = buffer.Length;
-                        output.Write(buffer, 0, buffer.Length);
+                        context.Response.ContentLength64 = output.Length;
+                        //output.Write(buffer, 0, buffer.Length);
+                        response.OutputStream.CopyTo(output);
                         output.Close();
                         context.Response.Close();
                     });
