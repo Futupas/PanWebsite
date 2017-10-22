@@ -316,28 +316,32 @@ namespace PanWebsite
         }
         public static PanResponse ReturnHtml(string path, Encoding contentEncoding, List<PanCookie> cookies = null) // Return Html page
         {
-            return new PanResponse();
+            string html = File.ReadAllText(path);
+            return PanResponse.ReturnContent(html, contentEncoding, cookies);
         }
-        public static PanResponse ReturnFile(Stream file, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
+        public static PanResponse ReturnFile(Stream file, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
         {
-            return new PanResponse();
+            //FileStream fileStream = File.Open();
+            return new PanResponse(file, 200, contentEncoding, cookies, null, mime);
         }
-        public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
+        public static PanResponse ReturnFile(string path, Encoding contentEncoding, string mime, List<PanCookie> cookies = null) //Return File fron path
         {
-            return new PanResponse();
+            FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
+            return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
         }
         public static PanResponse ReturnCode(int code) //Return error
         {
-            return new PanResponse();
+            return new PanResponse(new MemoryStream(), code, Encoding.UTF8, null, null, "");
         }
         public static PanResponse ReturnCode(int code, Encoding contentEncoding, string content) //Return error with page
         {
-            return new PanResponse();
+            Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
+            return new PanResponse(stream, code, contentEncoding, null, null, "text/html");
         }
-        public static PanResponse ReturnRedirect(string destination) //Return redirect
-        {
-            return new PanResponse();
-        }
+        //public static PanResponse ReturnRedirect(string destination) //Return redirect
+        //{
+        //    return new PanResponse();
+        //}
     }
     public class PanCookie
     {
