@@ -76,7 +76,7 @@ namespace PanWebsiteLocal
                     Task.Factory.StartNew(() =>
                     {
                         Stream output = context.Response.OutputStream;
-                        byte[] buffer;
+                        //byte[] buffer;
 
                         // GET Cookies
                         List<PanCookie> cookies = new List<PanCookie>();
@@ -122,6 +122,10 @@ namespace PanWebsiteLocal
                         //response.
 
                         // SET Cookies
+                        if (response.Cookies == null)
+                        {
+                            response.Cookies = new List<PanCookie>();
+                        }
                         foreach (PanCookie c in response.Cookies)
                         {
                             string cookie = "";
@@ -134,7 +138,7 @@ namespace PanWebsiteLocal
                             context.Response.Headers.Add("Set-Cookie", cookie);
                         }
 
-                        context.Response.ContentLength64 = output.Length;
+                        //context.Response.ContentLength64 = output.Length;
                         //output.Write(buffer, 0, buffer.Length);
                         response.OutputStream.CopyTo(output);
                         output.Close();
@@ -331,7 +335,7 @@ namespace PanWebsiteLocal
             //FileStream fileStream = File.Open();
             return new PanResponse(file, 200, contentEncoding, cookies, null, mime);
         }
-        public static PanResponse ReturnFile(string path, Encoding contentEncoding, string mime, List<PanCookie> cookies = null) //Return File fron path
+        public static PanResponse ReturnFile(string path,  string mime,Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
             FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);

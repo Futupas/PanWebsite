@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using PanWebsiteLocal;
+//using PanWebsiteLocal;
+//using PanWebsite;
 
 namespace PanWebsite
 {
@@ -37,8 +38,9 @@ namespace PanWebsite
         {
             var cookies = new List<PanCookie>();
 
+            Console.WriteLine("g");
             Console.WriteLine(request.Url);
-
+            //return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
             if (request.Address.Length < 1)
             {
                 return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
@@ -50,7 +52,7 @@ namespace PanWebsite
                     case "content": return PanResponse.ReturnContent("Content", Encoding.UTF8); break;
                     case "html": return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website\index.html", Encoding.UTF8); break;
                     case "code": return PanResponse.ReturnCode(500); break;
-                    case "file": return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website\image.jpg", Encoding.UTF8); break;
+                    case "file": return PanResponse.ReturnFile(@"E:\PROJECTS\PanWebsite\Website\image.jpg", "image/jpeg", Encoding.UTF8); break;
                     default: return PanResponse.ReturnCode(404); break;
                 }
             }
