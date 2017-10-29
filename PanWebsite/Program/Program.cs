@@ -17,8 +17,8 @@ namespace PanWebsite
         {
             try
             {
-                PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
-                //PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
+                //PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
+                PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
                 website.Start();
                 Console.ReadLine();
                 website.Stop();
@@ -37,8 +37,7 @@ namespace PanWebsite
         static public PanResponse OnRequest(PanRequest request)
         {
             var cookies = new List<PanCookie>();
-
-            Console.WriteLine("g");
+            
             Console.WriteLine(request.Url);
             //return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
             if (request.Address.Length < 1)
