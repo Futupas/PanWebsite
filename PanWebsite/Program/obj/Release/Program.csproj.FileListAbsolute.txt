@@ -1,0 +1,11 @@
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\Program.exe.config
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\Program.exe
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\Program.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\PanWebsite.dll
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\Newtonsoft.Json.dll
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\PanWebsite.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\Newtonsoft.Json.xml
+E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.csprojResolveAssemblyReference.cache
+E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.csproj.CoreCompileInputs.cache
+E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.exe
+E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.pdb

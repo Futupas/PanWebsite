@@ -3,3 +3,11 @@ D:\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.pdb
 D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.csprojResolveAssemblyReference.cache
 D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.dll
 D:\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.dll
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\bin\Debug\PanWebsite.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\bin\Debug\Newtonsoft.Json.dll
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\bin\Debug\Newtonsoft.Json.xml
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.csprojResolveAssemblyReference.cache
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.csproj.CoreCompileInputs.cache
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.dll
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Debug\PanWebsite.pdb

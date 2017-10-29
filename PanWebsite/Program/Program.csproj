@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="PanWebsite">
       <HintPath>..\PanWebsite\bin\Release\PanWebsite.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
