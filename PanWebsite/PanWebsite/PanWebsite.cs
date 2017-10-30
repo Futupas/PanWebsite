@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
@@ -138,9 +139,9 @@ namespace PanWebsite
                             context.Response.Headers.Add("Set-Cookie", cookie);
                         }
 
-                        //context.Response.ContentLength64 = output.Length;
-                        //output.Write(buffer, 0, buffer.Length);
                         response.OutputStream.CopyTo(output);
+                        response.OutputStream.Close();
+                        response.OutputStream.Dispose();
                         output.Close();
                         context.Response.Close();
                     });
@@ -332,12 +333,18 @@ namespace PanWebsite
         }
         public static PanResponse ReturnFile(Stream file, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
         {
-            //FileStream fileStream = File.Open();
             return new PanResponse(file, 200, contentEncoding, cookies, null, mime);
         }
         public static PanResponse ReturnFile(string path, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
             FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
+            return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
+        {
+            FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
+
+            string mime = MimeMapping.GetMimeMapping(Path.GetExtension(path));
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
         }
         public static PanResponse ReturnCode(int code) //Return error

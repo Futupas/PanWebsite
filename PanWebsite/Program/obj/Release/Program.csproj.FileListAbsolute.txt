@@ -7,3 +7,5 @@ E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.csprojResolveAssem
 E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.csproj.CoreCompileInputs.cache
 E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.exe
 E:\PROJECTS\PanWebsite\PanWebsite\Program\obj\Release\Program.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\PanWebsite.dll
+E:\PROJECTS\PanWebsite\PanWebsite\Program\bin\Release\PanWebsite.pdb

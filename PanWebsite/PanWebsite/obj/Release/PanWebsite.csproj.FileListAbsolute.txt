@@ -9,3 +9,4 @@ E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\bin\Release\Newtonsoft.Json.xml
 E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.csproj.CoreCompileInputs.cache
 E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.dll
 E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.pdb
+E:\PROJECTS\PanWebsite\PanWebsite\PanWebsite\obj\Release\PanWebsite.csprojResolveAssemblyReference.cache
