@@ -68,10 +68,8 @@ namespace PanWebsite
                         }
                         else if (request.Address[1] == "api")
                         {
-                            //Console.WriteLine(request.Data["pic"]);
                             StreamReader sr = new StreamReader(request.InputStream);
                             Console.WriteLine(sr.ReadToEnd());
-                            Console.WriteLine(request.HasEntityBody);
                             return PanResponse.ReturnCode(200);
                         }
                         else

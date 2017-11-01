@@ -5,8 +5,8 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/upload/api">
-        <input type="file" name="pic">
+    <form action="/upload/api" enctype="multipart/form-data" method="post">
+        <input type="file" name="pic" multiple>
         <input type="submit">
     </form>
 </body>
