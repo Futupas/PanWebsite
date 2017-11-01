@@ -138,7 +138,7 @@ namespace PanWebsiteLocal
                             cookie += ("; Path=" + c.Path);
                             context.Response.Headers.Add("Set-Cookie", cookie);
                         }
-                        
+
                         response.OutputStream.CopyTo(output);
                         response.OutputStream.Close();
                         response.OutputStream.Dispose();
@@ -343,7 +343,7 @@ namespace PanWebsiteLocal
         public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
             FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
-            
+
             string mime = MimeMapping.GetMimeMapping(Path.GetExtension(path));
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
         }

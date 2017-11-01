@@ -23,20 +23,20 @@ namespace PanWebsite
                 website.Stop();
                 Console.ReadLine();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Exception!");
                 Console.WriteLine(ex.InnerException.Message);
                 Console.ReadLine();
             }
-            
+
         }
 
         static public PanResponse OnRequest(PanRequest request)
         {
             var cookies = new List<PanCookie>();
-            
+
             Console.WriteLine(request.Url);
             //return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
             if (request.Address.Length < 1)
@@ -52,7 +52,7 @@ namespace PanWebsite
                     case "html": return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website\index.html", Encoding.UTF8); break;
                     case "code": return PanResponse.ReturnCode(500); break;
                     case "file": return PanResponse.ReturnFile(@"E:\PROJECTS\PanWebsite\Website\image.jpg", Encoding.UTF8); break;
-                    case "json": return PanResponse.ReturnJson(new { a=5, s="fff", b=true }); break;
+                    case "json": return PanResponse.ReturnJson(new { a = 5, s = "fff", b = true }); break;
                     default: return PanResponse.ReturnCode(404); break;
                 }
             }
