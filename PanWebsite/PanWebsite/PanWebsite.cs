@@ -106,8 +106,9 @@ namespace PanWebsite
                         bool isLocal = context.Request.IsLocal; // Is Local
                         string userAgent = context.Request.UserAgent; // User Agent
                         string[] userLanguages = context.Request.UserLanguages; // User Languages
+                        IPEndPoint remoteEndPoint = context.Request.RemoteEndPoint;
 
-                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages);
+                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, remoteEndPoint);
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Text
@@ -181,6 +182,7 @@ namespace PanWebsite
         public readonly bool IsLocal; //
         public readonly string UserAgent; //
         public readonly string[] UserLanguages; //
+        public readonly IPEndPoint RemoteEndPoint;
 
         public PanRequest()
         {
@@ -196,6 +198,7 @@ namespace PanWebsite
             this.IsLocal = true;
             this.UserAgent = "";
             this.UserLanguages = null;
+            this.RemoteEndPoint = new IPEndPoint(new IPAddress(new byte[] { 0, 0, 0, 0 }), 0);
         }
         public PanRequest(
             string Method,
@@ -209,7 +212,8 @@ namespace PanWebsite
             Dictionary<string, string[]> Headers, /**/
             bool IsLocal, /**/
             string UserAgent, /**/
-            string[] UserLanguages /**/)
+            string[] UserLanguages, /**/
+            IPEndPoint RemoteEndPoint)
         {
             this.Method = Method;
             this.Url = Url;
@@ -223,6 +227,7 @@ namespace PanWebsite
             this.IsLocal = IsLocal;
             this.UserAgent = UserAgent;
             this.UserLanguages = UserLanguages;
+            this.RemoteEndPoint = RemoteEndPoint;
         }
 
         public Dictionary<string, string> PostData
@@ -271,7 +276,7 @@ namespace PanWebsite
                 Dictionary<string, string> data = new Dictionary<string, string>();
                 if (this.Url.Contains("?"))
                 {
-                    data_str = this.Url.Split("?".ToCharArray())[0];
+                    data_str = this.Url.Split("?".ToCharArray())[1];
                     if (data_str.Length > 0)
                     {
                         string[] data_arr = data_str.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);

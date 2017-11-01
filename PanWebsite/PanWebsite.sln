@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PanWebsite", "PanWebsite\PanWebsite.csproj", "{5778DAAC-1B2B-4AA0-9E18-CE0ED20EBB85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.csproj", "{F9FA3AB3-3692-4EDE-B68D-E3CADAE44D8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDebug", "LocalDebug\LocalDebug.csproj", "{B1D86BD5-59BD-42A1-B39A-76D8F8D07F9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{F9FA3AB3-3692-4EDE-B68D-E3CADAE44D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9FA3AB3-3692-4EDE-B68D-E3CADAE44D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9FA3AB3-3692-4EDE-B68D-E3CADAE44D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1D86BD5-59BD-42A1-B39A-76D8F8D07F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1D86BD5-59BD-42A1-B39A-76D8F8D07F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1D86BD5-59BD-42A1-B39A-76D8F8D07F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1D86BD5-59BD-42A1-B39A-76D8F8D07F9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {144ADD8D-F594-40F2-80EC-99903F59E85B}
 	EndGlobalSection
 EndGlobal

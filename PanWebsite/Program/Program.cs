@@ -53,6 +53,26 @@ namespace PanWebsite
                     case "code": return PanResponse.ReturnCode(500); break;
                     case "file": return PanResponse.ReturnFile(@"E:\PROJECTS\PanWebsite\Website\image.jpg", Encoding.UTF8); break;
                     case "json": return PanResponse.ReturnJson(new { a=5, s="fff", b=true }); break;
+                    case "upload":
+                        if (request.Address.Length == 1)
+                        {
+                            return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website\upload.html", Encoding.UTF8); break;
+                        }
+                        else if (request.Address[1] == "html")
+                        {
+                            return PanResponse.ReturnCode(200);
+                        }
+                        else if (request.Address[1] == "api")
+                        {
+                            Console.WriteLine(request.Data["pic"]);
+                            Console.WriteLine(request.InputStream);
+                            return PanResponse.ReturnCode(200);
+                        }
+                        else
+                        {
+                            return PanResponse.ReturnCode(500); break;
+                        }
+                        break;
                     default: return PanResponse.ReturnCode(404); break;
                 }
             }
