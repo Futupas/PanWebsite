@@ -293,6 +293,53 @@ namespace PanWebsite
             }
         }
         //public FileStream InputFile { get { } }
+        public List<PanFormDataField> MutlipartFormData
+        {
+            get
+            {
+                List<PanFormDataField> formdata = new List<PanFormDataField>();
+                StreamReader iStream = new StreamReader(this.InputStream); // input stream
+                string sStream = iStream.ReadToEnd();
+                Console.WriteLine(sStream);
+                string[] lines = sStream.Split("\r".ToCharArray());
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    lines[i] = lines[i].Substring(1);
+                }
+                var end = lines[0] + "--";
+                var boundary = lines[0];
+                PanFormDataField pfdf = new PanFormDataField();
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    if (lines[i] == boundary)
+                    {
+                        formdata.Add(pfdf);
+                        pfdf = new PanFormDataField();
+                        continue;
+                    }
+                    if (lines[i] == end)
+                    {
+                        formdata.Add(pfdf);
+                        pfdf = new PanFormDataField();
+                        break;
+                    }
+
+                    if (lines[i].Contains("Content-Disposition:"))
+                    {
+
+                    }
+                    if (lines[i].Contains("Content-Type:"))
+                    {
+
+                    }
+                    if (string.IsNullOrEmpty(lines[i - 1]))
+                    {
+                        
+                    }
+                }
+                return formdata;
+            }
+        }
     }
     public class PanResponse
     {
@@ -378,6 +425,34 @@ namespace PanWebsite
             this.Value = value;
             this.Path = path;
             this.Expires = expires;
+        }
+    }
+    public class PanFormDataField
+    {
+        public readonly string Name;
+        public readonly string Filename;
+        public readonly Stream Data;
+        public readonly string Mime;
+        public string DataString
+        {
+            get
+            {
+                return "";
+            }
+        }
+        public PanFormDataField()
+        {
+            this.Name = "";
+            this.Filename = "";
+            this.Data = new MemoryStream();
+            this.Mime = "";
+        }
+        public PanFormDataField(string name, string filename, Stream data, string mime)
+        {
+            this.Name = name;
+            this.Filename = filename;
+            this.Data = data;
+            this.Mime = mime;
         }
     }
 }

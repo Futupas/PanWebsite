@@ -16,8 +16,8 @@ namespace PanWebsite
         {
             try
             {
-                //PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
-                PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
+                PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
+                //PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
                 website.Start();
                 Console.ReadLine();
                 website.Stop();
@@ -64,8 +64,9 @@ namespace PanWebsite
                         }
                         else if (request.Address[1] == "api")
                         {
-                            StreamReader sr = new StreamReader(request.InputStream);
-                            Console.WriteLine(sr.ReadToEnd());
+                            //StreamReader sr = new StreamReader(request.InputStream);
+                            //Console.WriteLine(sr.ReadToEnd());
+                            var d = request.MutlipartFormData;
                             return PanResponse.ReturnCode(200);
                         }
                         else
