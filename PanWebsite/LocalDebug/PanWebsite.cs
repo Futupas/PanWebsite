@@ -328,8 +328,13 @@ namespace PanWebsite
                         contentType = data.Substring(cnttype_start, cnttype_end - cnttype_start);
                         Console.WriteLine(contentType);
                     }
-                    //dohere
-                    PanMultipartFormDataField f = new PanMultipartFormDataField(name, filename, , contentType);
+                    Stream s = new MemoryStream();
+                    StreamWriter sw = new StreamWriter(s);
+                    sw.Write(content);
+                    sw.Flush();
+                    s.Position = 0;
+                    PanMultipartFormDataField f = new PanMultipartFormDataField(name, filename, s, contentType);
+                    formdata.Add(f);
                 }
                 return formdata;
             }
@@ -427,11 +432,14 @@ namespace PanWebsite
         public readonly string Filename;
         public readonly Stream Data;
         public readonly string Mime;
-        public string DataString
+        public string StringData
         {
             get
             {
-                return "";
+                StreamReader iStream = new StreamReader(this.Data); // input stream
+                this.Data.Position = 0;
+                string sStream = iStream.ReadToEnd();
+                return sStream;
             }
         }
         public PanMultipartFormDataField()
