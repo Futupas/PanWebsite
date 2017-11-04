@@ -62,10 +62,15 @@ namespace PanWebsite
                         {
                             return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website2\postdata.html", Encoding.UTF8); break;
                         }
+                        else if (request.Address[1] == "form")
+                        {
+                            return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website2\postform.html", Encoding.UTF8); break;
+                        }
                         else if (request.Address[1] == "api")
                         {
                             //StreamReader sr = new StreamReader(request.InputStream);
                             //Console.WriteLine(sr.ReadToEnd());
+                            //request.InputStream.Position = 0;
                             var d = request.MutlipartFormData;
                             return PanResponse.ReturnCode(200);
                         }

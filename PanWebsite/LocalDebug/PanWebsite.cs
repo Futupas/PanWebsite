@@ -98,7 +98,9 @@ namespace PanWebsite
                         // GET Data
                         string url = context.Request.RawUrl; // Url
                         string method = context.Request.HttpMethod; // Method
-                        Stream inputStream = context.Request.InputStream; // Body
+                        Stream inputStream = new MemoryStream(); // Body
+                        context.Request.InputStream.CopyTo(inputStream);
+                        inputStream.Position = 0;
                         bool hasEntityBody = context.Request.HasEntityBody; // Has Entity Body
                         string[] acceptTypes = context.Request.AcceptTypes; // Accept Types
                         Encoding contentEncoding = context.Request.ContentEncoding; // Content Encoding
@@ -293,49 +295,41 @@ namespace PanWebsite
             }
         }
         //public FileStream InputFile { get { } }
-        public List<PanFormDataField> MutlipartFormData
+        public List<PanMultipartFormDataField> MutlipartFormData
         {
             get
             {
-                List<PanFormDataField> formdata = new List<PanFormDataField>();
+                List<PanMultipartFormDataField> formdata = new List<PanMultipartFormDataField>();
                 StreamReader iStream = new StreamReader(this.InputStream); // input stream
+                this.InputStream.Position = 0;
                 string sStream = iStream.ReadToEnd();
                 Console.WriteLine(sStream);
-                string[] lines = sStream.Split("\r".ToCharArray());
-                for (int i = 0; i < lines.Length; i++)
+                string boundary = sStream.Substring(0, sStream.IndexOf("\r\n"));
+                string[] items = sStream.Split(new string[] { boundary+"\r\n", "\r\n"+boundary+"\r\n", "\r\n"+boundary+"--\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string item in items)
                 {
-                    lines[i] = lines[i].Substring(1);
-                }
-                var end = lines[0] + "--";
-                var boundary = lines[0];
-                PanFormDataField pfdf = new PanFormDataField();
-                for (int i = 1; i < lines.Length; i++)
-                {
-                    if (lines[i] == boundary)
+                    string[] data_content = item.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.None);
+                    string data = data_content[0]; string content = data_content[1];
+                    int name_start = data.IndexOf("name=\"") + 6;
+                    int name_end = data.IndexOf("\"", name_start);
+                    string name = data.Substring(name_start, name_end-name_start);
+                    string filename = "";
+                    string contentType = "";
+                    if (data.Contains("filename=\""))
                     {
-                        formdata.Add(pfdf);
-                        pfdf = new PanFormDataField();
-                        continue;
+                        int filename_start = data.IndexOf("filename=\"") + 10;
+                        int filename_end = data.IndexOf("\"", filename_start);
+                        filename = data.Substring(filename_start, filename_end - filename_start);
                     }
-                    if (lines[i] == end)
+                    if (data.Contains("\r\nContent-Type: "))
                     {
-                        formdata.Add(pfdf);
-                        pfdf = new PanFormDataField();
-                        break;
+                        int cnttype_start = data.IndexOf("\r\nContent-Type: ") + 16;
+                        int cnttype_end = data.Length;
+                        contentType = data.Substring(cnttype_start, cnttype_end - cnttype_start);
+                        Console.WriteLine(contentType);
                     }
-
-                    if (lines[i].Contains("Content-Disposition:"))
-                    {
-
-                    }
-                    if (lines[i].Contains("Content-Type:"))
-                    {
-
-                    }
-                    if (string.IsNullOrEmpty(lines[i - 1]))
-                    {
-                        
-                    }
+                    //dohere
+                    PanMultipartFormDataField f = new PanMultipartFormDataField(name, filename, , contentType);
                 }
                 return formdata;
             }
@@ -427,7 +421,7 @@ namespace PanWebsite
             this.Expires = expires;
         }
     }
-    public class PanFormDataField
+    public class PanMultipartFormDataField
     {
         public readonly string Name;
         public readonly string Filename;
@@ -440,14 +434,14 @@ namespace PanWebsite
                 return "";
             }
         }
-        public PanFormDataField()
+        public PanMultipartFormDataField()
         {
             this.Name = "";
             this.Filename = "";
             this.Data = new MemoryStream();
             this.Mime = "";
         }
-        public PanFormDataField(string name, string filename, Stream data, string mime)
+        public PanMultipartFormDataField(string name, string filename, Stream data, string mime)
         {
             this.Name = name;
             this.Filename = filename;
