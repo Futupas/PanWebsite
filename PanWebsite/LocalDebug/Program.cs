@@ -16,6 +16,7 @@ namespace PanWebsite
         {
             try
             {
+                Console.OutputEncoding = Encoding.UTF8;
                 PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
                 //PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
                 website.Start();
@@ -58,20 +59,29 @@ namespace PanWebsite
                         {
                             return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website2\upload.html", Encoding.UTF8); break;
                         }
-                        else if (request.Address[1] == "post")
-                        {
-                            return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website2\postdata.html", Encoding.UTF8); break;
-                        }
-                        else if (request.Address[1] == "form")
-                        {
-                            return PanResponse.ReturnHtml(@"E:\PROJECTS\PanWebsite\Website2\postform.html", Encoding.UTF8); break;
-                        }
                         else if (request.Address[1] == "api")
                         {
-                            //StreamReader sr = new StreamReader(request.InputStream);
-                            //Console.WriteLine(sr.ReadToEnd());
-                            //request.InputStream.Position = 0;
                             var d = request.MutlipartFormData;
+                            foreach (var item in d)
+                            {
+                                if (item.Filename != "")
+                                {
+                                    //FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", item.Filename), FileMode.Create, FileAccess.ReadWrite);
+                                    ////item.Data.Position = 0;
+                                    ////fs.Position = 0;
+                                    ////item.Data.CopyTo(fs);
+                                    ////
+                                    //BinaryWriter bw = new BinaryWriter(fs);
+                                    //bw.Flush();
+                                    //item.Data.CopyTo(bw.BaseStream);
+                                    //fs.Close();
+                                    //fs.Dispose();
+                                    //bw.Close();
+                                    //bw.Dispose();
+                                    //todo here
+                                    //Console.WriteLine(item.StringData);
+                                }
+                            }
                             return PanResponse.ReturnCode(200);
                         }
                         else
