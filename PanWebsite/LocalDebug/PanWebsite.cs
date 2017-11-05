@@ -366,29 +366,53 @@ namespace PanWebsite
             this.MIME = mime;
         }
 
+        public static PanResponse ReturnEmtry(List<PanCookie> cookies = null)
+        {
+            return PanResponse.ReturnContent("", cookies);
+        }
         public static PanResponse ReturnContent(string content, Encoding contentEncoding, List<PanCookie> cookies = null) //Return string (content)
         {
             Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
             return new PanResponse(stream, 200, contentEncoding, cookies, null, "text/html");
         }
-        public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
+        public static PanResponse ReturnContent(string content, List<PanCookie> cookies = null) //Return string (content)
+        {
+            return PanResponse.ReturnContent(content, Encoding.UTF8, cookies);
+        }
+        public static PanResponse ReturnJson(object o, Encoding contentEncoding, List<PanCookie> cookies = null) //Return json view of object (as string)
         {
             Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(o)));
-            return new PanResponse(stream, 200, Encoding.UTF8, cookies, null, "application/json");
+            return new PanResponse(stream, 200, contentEncoding, cookies, null, "application/json");
+        }
+        public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
+        {
+            return PanResponse.ReturnJson(o, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnHtml(string path, Encoding contentEncoding, List<PanCookie> cookies = null) // Return Html page
         {
             string html = File.ReadAllText(path);
             return PanResponse.ReturnContent(html, contentEncoding, cookies);
         }
+        public static PanResponse ReturnHtml(string path, List<PanCookie> cookies = null) // Return Html page
+        {
+            return PanResponse.ReturnHtml(path, Encoding.UTF8, cookies);
+        }
         public static PanResponse ReturnFile(Stream file, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
         {
             return new PanResponse(file, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(Stream file, string mime, List<PanCookie> cookies = null) //Return File from stream
+        {
+            return PanResponse.ReturnFile(file, mime, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnFile(string path, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
             FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(string path, string mime, List<PanCookie> cookies = null) //Return File fron path
+        {
+            return PanResponse.ReturnFile(path, mime, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
@@ -396,6 +420,10 @@ namespace PanWebsite
 
             string mime = MimeMapping.GetMimeMapping(Path.GetExtension(path));
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(string path, List<PanCookie> cookies = null) //Return File fron path
+        {
+            return PanResponse.ReturnFile(path, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnCode(int code) //Return error
         {
@@ -405,6 +433,10 @@ namespace PanWebsite
         {
             Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
             return new PanResponse(stream, code, contentEncoding, null, null, "text/html");
+        }
+        public static PanResponse ReturnCode(int code, string content) //Return error with page
+        {
+            return PanResponse.ReturnCode(code, Encoding.UTF8, content);
         }
         //public static PanResponse ReturnRedirect(string destination) //Return redirect
         //{
