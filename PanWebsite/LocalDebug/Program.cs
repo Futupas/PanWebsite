@@ -16,7 +16,6 @@ namespace PanWebsite
         {
             try
             {
-                Console.OutputEncoding = Encoding.UTF8;
                 PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
                 //PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
                 website.Start();
@@ -39,7 +38,6 @@ namespace PanWebsite
             var cookies = new List<PanCookie>();
 
             Console.WriteLine(request.Url);
-            //return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
             if (request.Address.Length < 1)
             {
                 return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
@@ -66,20 +64,12 @@ namespace PanWebsite
                             {
                                 if (item.Filename != "")
                                 {
-                                    //FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", item.Filename), FileMode.Create, FileAccess.ReadWrite);
-                                    ////item.Data.Position = 0;
-                                    ////fs.Position = 0;
-                                    ////item.Data.CopyTo(fs);
-                                    ////
-                                    //BinaryWriter bw = new BinaryWriter(fs);
-                                    //bw.Flush();
-                                    //item.Data.CopyTo(bw.BaseStream);
-                                    //fs.Close();
-                                    //fs.Dispose();
-                                    //bw.Close();
-                                    //bw.Dispose();
-                                    //todo here
-                                    //Console.WriteLine(item.StringData);
+                                    FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", item.Filename), FileMode.Create, FileAccess.ReadWrite);
+                                    item.Data.Position = 0;
+                                    fs.Position = 0;
+                                    item.Data.CopyTo(fs);
+                                    fs.Close();
+                                    fs.Dispose();
                                 }
                             }
                             return PanResponse.ReturnCode(200);

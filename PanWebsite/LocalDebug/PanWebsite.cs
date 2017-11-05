@@ -77,7 +77,6 @@ namespace PanWebsite
                     Task.Factory.StartNew(() =>
                     {
                         Stream output = context.Response.OutputStream;
-                        //byte[] buffer;
 
                         // GET Cookies
                         List<PanCookie> cookies = new List<PanCookie>();
@@ -113,17 +112,12 @@ namespace PanWebsite
                         PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, remoteEndPoint);
                         PanResponse response = onRequest.Invoke(request);
 
-                        // SET Text
-                        //buffer = System.Text.Encoding.UTF8.GetBytes(response.OutputStream);
-
                         // SET Code
                         int code = response.Code;
                         context.Response.StatusCode = code;
 
                         // SET
                         context.Response.ContentType = response.MIME;
-                        //context.Response.
-                        //response.
 
                         // SET Cookies
                         if (response.Cookies == null)
@@ -304,34 +298,17 @@ namespace PanWebsite
                 this.InputStream.CopyTo(iStream);
                 this.InputStream.Position = 0;
                 iStream.Position = 0;
-                byte[] buffer = new byte[iStream.Length];
                 string sStream = "";
                 for (int i = 0; i < iStream.Length; i++)
                 {
-                    buffer[0] = (byte)iStream.ReadByte();
-                    sStream += (char)buffer[0];
+                    sStream += (char)(byte)iStream.ReadByte();
                 }
-                //string sStream = "";//= iStream.ReadToEnd();
-                //Console.WriteLine(iStream.CurrentEncoding);
-                //Console.WriteLine(sStream);
                 string boundary = sStream.Substring(0, sStream.IndexOf("\r\n"));
                 string[] items = sStream.Split(new string[] { boundary+"\r\n", "\r\n"+boundary+"\r\n", "\r\n"+boundary+"--\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string item in items)
                 {
                     string[] data_content = item.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.None);
-                    int indOF = item.IndexOf("\r\n\r\n");
                     string data = data_content[0]; string content = data_content[1];
-                    int g1 = data.Length;
-                    int g2 = content.Length;
-                    int g3 = item.Length;
-                    int g4 = item.IndexOf("\r\n\r\n");
-                    FileStream fs1 = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", "mar1.jpg"), FileMode.Create, FileAccess.ReadWrite);
-                    foreach (char  c in content)
-                    {
-                        fs1.WriteByte((byte)c);
-                    }
-                    fs1.Close();
-                    fs1.Dispose();
                     int name_start = data.IndexOf("name=\"") + 6;
                     int name_end = data.IndexOf("\"", name_start);
                     string name = data.Substring(name_start, name_end-name_start);
@@ -351,31 +328,10 @@ namespace PanWebsite
                         Console.WriteLine(contentType);
                     }
                     Stream s = new MemoryStream();
-                    BinaryWriter sw = new BinaryWriter(s);
-                    sw.Write(content);
-                    sw.Flush();
-                    s.Position = 0;
-                    //Console.WriteLine(content);
-
-                    //byte[] buffer = new byte[s.Length];
-                    //for (int i = 0; i < buffer.Length; i++)
-                    //{
-                    //    buffer[i] = (byte)s.ReadByte();
-                    //    fs.WriteByte(buffer[i]);
-                    //}
-
-                    FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", "mar.jpg"), FileMode.Create, FileAccess.ReadWrite);
-                    //for (int i = 0; i < content.Length; i++)
-                    //{
-                    //    fs.WriteByte((byte)content[i]);
-                    //}
-                    BinaryWriter bw = new BinaryWriter(fs);
-                    
-                    File.WriteAllText(@"E:\PROJECTS\PanWebsite\Website2\downloads\content.txt", content);
-                    bw.Write(content);
-                    fs.Close();
-                    fs.Dispose();
-                    
+                    foreach (char c in content)
+                    {
+                        s.WriteByte((byte)c);
+                    }
                     PanMultipartFormDataField f = new PanMultipartFormDataField(name, filename, s, contentType);
                     formdata.Add(f);
                 }
