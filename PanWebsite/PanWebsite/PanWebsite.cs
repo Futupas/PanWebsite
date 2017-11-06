@@ -77,7 +77,6 @@ namespace PanWebsite
                     Task.Factory.StartNew(() =>
                     {
                         Stream output = context.Response.OutputStream;
-                        //byte[] buffer;
 
                         // GET Cookies
                         List<PanCookie> cookies = new List<PanCookie>();
@@ -98,21 +97,24 @@ namespace PanWebsite
                         // GET Data
                         string url = context.Request.RawUrl; // Url
                         string method = context.Request.HttpMethod; // Method
-                        Stream inputStream = context.Request.InputStream; // Body
+                        Stream inputStream = new MemoryStream(); // Body
                         bool hasEntityBody = context.Request.HasEntityBody; // Has Entity Body
+                        if (hasEntityBody)
+                        {
+                            context.Request.InputStream.CopyTo(inputStream);
+                            inputStream.Position = 0;
+                        }
                         string[] acceptTypes = context.Request.AcceptTypes; // Accept Types
                         Encoding contentEncoding = context.Request.ContentEncoding; // Content Encoding
                         string contentType = context.Request.ContentType; // Content Type
                         bool isLocal = context.Request.IsLocal; // Is Local
                         string userAgent = context.Request.UserAgent; // User Agent
                         string[] userLanguages = context.Request.UserLanguages; // User Languages
-                        IPEndPoint remoteEndPoint = context.Request.RemoteEndPoint;
+                        IPEndPoint remoteEndPoint = context.Request.RemoteEndPoint; // User IP
+                        string userIP = remoteEndPoint.Address.ToString();
 
-                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, remoteEndPoint);
+                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, userIP);
                         PanResponse response = onRequest.Invoke(request);
-
-                        // SET Text
-                        //buffer = System.Text.Encoding.UTF8.GetBytes(response.OutputStream);
 
                         // SET Code
                         int code = response.Code;
@@ -120,8 +122,6 @@ namespace PanWebsite
 
                         // SET
                         context.Response.ContentType = response.MIME;
-                        //context.Response.
-                        //response.
 
                         // SET Cookies
                         if (response.Cookies == null)
@@ -182,7 +182,7 @@ namespace PanWebsite
         public readonly bool IsLocal; //
         public readonly string UserAgent; //
         public readonly string[] UserLanguages; //
-        public readonly IPEndPoint RemoteEndPoint;
+        public readonly string UserIP;
 
         public PanRequest()
         {
@@ -198,7 +198,7 @@ namespace PanWebsite
             this.IsLocal = true;
             this.UserAgent = "";
             this.UserLanguages = null;
-            this.RemoteEndPoint = new IPEndPoint(new IPAddress(new byte[] { 0, 0, 0, 0 }), 0);
+            this.UserIP = "0.0.0.0";
         }
         public PanRequest(
             string Method,
@@ -213,7 +213,7 @@ namespace PanWebsite
             bool IsLocal, /**/
             string UserAgent, /**/
             string[] UserLanguages, /**/
-            IPEndPoint RemoteEndPoint)
+            string UserIP)
         {
             this.Method = Method;
             this.Url = Url;
@@ -227,7 +227,7 @@ namespace PanWebsite
             this.IsLocal = IsLocal;
             this.UserAgent = UserAgent;
             this.UserLanguages = UserLanguages;
-            this.RemoteEndPoint = RemoteEndPoint;
+            this.UserIP = UserIP;
         }
 
         public Dictionary<string, string> PostData
@@ -293,6 +293,55 @@ namespace PanWebsite
             }
         }
         //public FileStream InputFile { get { } }
+        public List<PanMultipartFormDataField> MutlipartFormData
+        {
+            get
+            {
+                List<PanMultipartFormDataField> formdata = new List<PanMultipartFormDataField>();
+                MemoryStream iStream = new MemoryStream(); // input stream
+                this.InputStream.CopyTo(iStream);
+                this.InputStream.Position = 0;
+                iStream.Position = 0;
+                string sStream = "";
+                for (int i = 0; i < iStream.Length; i++)
+                {
+                    sStream += (char)(byte)iStream.ReadByte();
+                }
+                string boundary = sStream.Substring(0, sStream.IndexOf("\r\n"));
+                string[] items = sStream.Split(new string[] { boundary + "\r\n", "\r\n" + boundary + "\r\n", "\r\n" + boundary + "--\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string item in items)
+                {
+                    string[] data_content = item.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.None);
+                    string data = data_content[0]; string content = data_content[1];
+                    int name_start = data.IndexOf("name=\"") + 6;
+                    int name_end = data.IndexOf("\"", name_start);
+                    string name = data.Substring(name_start, name_end - name_start);
+                    string filename = "";
+                    string contentType = "";
+                    if (data.Contains("filename=\""))
+                    {
+                        int filename_start = data.IndexOf("filename=\"") + 10;
+                        int filename_end = data.IndexOf("\"", filename_start);
+                        filename = data.Substring(filename_start, filename_end - filename_start);
+                    }
+                    if (data.Contains("\r\nContent-Type: "))
+                    {
+                        int cnttype_start = data.IndexOf("\r\nContent-Type: ") + 16;
+                        int cnttype_end = data.Length;
+                        contentType = data.Substring(cnttype_start, cnttype_end - cnttype_start);
+                        Console.WriteLine(contentType);
+                    }
+                    Stream s = new MemoryStream();
+                    foreach (char c in content)
+                    {
+                        s.WriteByte((byte)c);
+                    }
+                    PanMultipartFormDataField f = new PanMultipartFormDataField(name, filename, s, contentType);
+                    formdata.Add(f);
+                }
+                return formdata;
+            }
+        }
     }
     public class PanResponse
     {
@@ -321,29 +370,53 @@ namespace PanWebsite
             this.MIME = mime;
         }
 
+        public static PanResponse ReturnEmtry(List<PanCookie> cookies = null)
+        {
+            return PanResponse.ReturnContent("", cookies);
+        }
         public static PanResponse ReturnContent(string content, Encoding contentEncoding, List<PanCookie> cookies = null) //Return string (content)
         {
             Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
             return new PanResponse(stream, 200, contentEncoding, cookies, null, "text/html");
         }
-        public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
+        public static PanResponse ReturnContent(string content, List<PanCookie> cookies = null) //Return string (content)
+        {
+            return PanResponse.ReturnContent(content, Encoding.UTF8, cookies);
+        }
+        public static PanResponse ReturnJson(object o, Encoding contentEncoding, List<PanCookie> cookies = null) //Return json view of object (as string)
         {
             Stream stream = new MemoryStream(Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(o)));
-            return new PanResponse(stream, 200, Encoding.UTF8, cookies, null, "application/json");
+            return new PanResponse(stream, 200, contentEncoding, cookies, null, "application/json");
+        }
+        public static PanResponse ReturnJson(object o, List<PanCookie> cookies = null) //Return json view of object (as string)
+        {
+            return PanResponse.ReturnJson(o, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnHtml(string path, Encoding contentEncoding, List<PanCookie> cookies = null) // Return Html page
         {
             string html = File.ReadAllText(path);
             return PanResponse.ReturnContent(html, contentEncoding, cookies);
         }
+        public static PanResponse ReturnHtml(string path, List<PanCookie> cookies = null) // Return Html page
+        {
+            return PanResponse.ReturnHtml(path, Encoding.UTF8, cookies);
+        }
         public static PanResponse ReturnFile(Stream file, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File from stream
         {
             return new PanResponse(file, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(Stream file, string mime, List<PanCookie> cookies = null) //Return File from stream
+        {
+            return PanResponse.ReturnFile(file, mime, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnFile(string path, string mime, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
             FileStream fileStream = File.Open(path, FileMode.Open, FileAccess.Read);
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(string path, string mime, List<PanCookie> cookies = null) //Return File fron path
+        {
+            return PanResponse.ReturnFile(path, mime, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnFile(string path, Encoding contentEncoding, List<PanCookie> cookies = null) //Return File fron path
         {
@@ -351,6 +424,10 @@ namespace PanWebsite
 
             string mime = MimeMapping.GetMimeMapping(Path.GetExtension(path));
             return new PanResponse(fileStream, 200, contentEncoding, cookies, null, mime);
+        }
+        public static PanResponse ReturnFile(string path, List<PanCookie> cookies = null) //Return File fron path
+        {
+            return PanResponse.ReturnFile(path, Encoding.UTF8, cookies);
         }
         public static PanResponse ReturnCode(int code) //Return error
         {
@@ -360,6 +437,10 @@ namespace PanWebsite
         {
             Stream stream = new MemoryStream(contentEncoding.GetBytes(content));
             return new PanResponse(stream, code, contentEncoding, null, null, "text/html");
+        }
+        public static PanResponse ReturnCode(int code, string content) //Return error with page
+        {
+            return PanResponse.ReturnCode(code, Encoding.UTF8, content);
         }
         //public static PanResponse ReturnRedirect(string destination) //Return redirect
         //{
@@ -378,6 +459,37 @@ namespace PanWebsite
             this.Value = value;
             this.Path = path;
             this.Expires = expires;
+        }
+    }
+    public class PanMultipartFormDataField
+    {
+        public readonly string Name;
+        public readonly string Filename;
+        public readonly Stream Data;
+        public readonly string Mime;
+        public string StringData
+        {
+            get
+            {
+                StreamReader iStream = new StreamReader(this.Data); // input stream
+                this.Data.Position = 0;
+                string sStream = iStream.ReadToEnd();
+                return sStream;
+            }
+        }
+        public PanMultipartFormDataField()
+        {
+            this.Name = "";
+            this.Filename = "";
+            this.Data = new MemoryStream();
+            this.Mime = "";
+        }
+        public PanMultipartFormDataField(string name, string filename, Stream data, string mime)
+        {
+            this.Name = name;
+            this.Filename = filename;
+            this.Data = data;
+            this.Mime = mime;
         }
     }
 }

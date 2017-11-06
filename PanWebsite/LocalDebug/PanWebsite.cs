@@ -98,18 +98,22 @@ namespace PanWebsite
                         string url = context.Request.RawUrl; // Url
                         string method = context.Request.HttpMethod; // Method
                         Stream inputStream = new MemoryStream(); // Body
-                        context.Request.InputStream.CopyTo(inputStream);
-                        inputStream.Position = 0;
                         bool hasEntityBody = context.Request.HasEntityBody; // Has Entity Body
+                        if (hasEntityBody)
+                        {
+                            context.Request.InputStream.CopyTo(inputStream);
+                            inputStream.Position = 0;
+                        }
                         string[] acceptTypes = context.Request.AcceptTypes; // Accept Types
                         Encoding contentEncoding = context.Request.ContentEncoding; // Content Encoding
                         string contentType = context.Request.ContentType; // Content Type
                         bool isLocal = context.Request.IsLocal; // Is Local
                         string userAgent = context.Request.UserAgent; // User Agent
                         string[] userLanguages = context.Request.UserLanguages; // User Languages
-                        IPEndPoint remoteEndPoint = context.Request.RemoteEndPoint;
+                        IPEndPoint remoteEndPoint = context.Request.RemoteEndPoint; // User IP
+                        string userIP = remoteEndPoint.Address.ToString();
 
-                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, remoteEndPoint);
+                        PanRequest request = new PanRequest(method, url, inputStream, cookies, hasEntityBody, acceptTypes, contentEncoding, contentType, headers, isLocal, userAgent, userLanguages, userIP);
                         PanResponse response = onRequest.Invoke(request);
 
                         // SET Code
@@ -178,7 +182,7 @@ namespace PanWebsite
         public readonly bool IsLocal; //
         public readonly string UserAgent; //
         public readonly string[] UserLanguages; //
-        public readonly IPEndPoint RemoteEndPoint;
+        public readonly string UserIP;
 
         public PanRequest()
         {
@@ -194,7 +198,7 @@ namespace PanWebsite
             this.IsLocal = true;
             this.UserAgent = "";
             this.UserLanguages = null;
-            this.RemoteEndPoint = new IPEndPoint(new IPAddress(new byte[] { 0, 0, 0, 0 }), 0);
+            this.UserIP = "0.0.0.0";
         }
         public PanRequest(
             string Method,
@@ -209,7 +213,7 @@ namespace PanWebsite
             bool IsLocal, /**/
             string UserAgent, /**/
             string[] UserLanguages, /**/
-            IPEndPoint RemoteEndPoint)
+            string UserIP)
         {
             this.Method = Method;
             this.Url = Url;
@@ -223,7 +227,7 @@ namespace PanWebsite
             this.IsLocal = IsLocal;
             this.UserAgent = UserAgent;
             this.UserLanguages = UserLanguages;
-            this.RemoteEndPoint = RemoteEndPoint;
+            this.UserIP = UserIP;
         }
 
         public Dictionary<string, string> PostData

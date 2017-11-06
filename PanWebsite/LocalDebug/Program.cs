@@ -16,8 +16,8 @@ namespace PanWebsite
         {
             try
             {
-                PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
-                //PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
+                //PanWebsite website = new PanWebsite("http://localhost:82/", OnRequest);
+                PanWebsite website = new PanWebsite("http://192.168.0.111:80/", OnRequest);
                 website.Start();
                 Console.ReadLine();
                 website.Stop();
@@ -37,7 +37,7 @@ namespace PanWebsite
         {
             var cookies = new List<PanCookie>();
 
-            Console.WriteLine(request.Url);
+            Console.WriteLine(request.Url + " " + request.IsLocal.ToString() + " " + request.UserIP);
             if (request.Address.Length < 1)
             {
                 return PanResponse.ReturnContent("Emtry page", Encoding.UTF8);
@@ -59,20 +59,27 @@ namespace PanWebsite
                         }
                         else if (request.Address[1] == "api")
                         {
-                            var d = request.MutlipartFormData;
-                            foreach (var item in d)
+                            if (request.HasEntityBody)
                             {
-                                if (item.Filename != "")
+                                var d = request.MutlipartFormData;
+                                foreach (var item in d)
                                 {
-                                    FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", item.Filename), FileMode.Create, FileAccess.ReadWrite);
-                                    item.Data.Position = 0;
-                                    fs.Position = 0;
-                                    item.Data.CopyTo(fs);
-                                    fs.Close();
-                                    fs.Dispose();
+                                    if (item.Filename != "")
+                                    {
+                                        FileStream fs = File.Open(Path.Combine(@"E:\PROJECTS\PanWebsite\Website2\downloads", item.Filename), FileMode.Create, FileAccess.ReadWrite);
+                                        item.Data.Position = 0;
+                                        fs.Position = 0;
+                                        item.Data.CopyTo(fs);
+                                        fs.Close();
+                                        fs.Dispose();
+                                    }
                                 }
+                                return PanResponse.ReturnCode(200);
                             }
-                            return PanResponse.ReturnCode(200);
+                            else
+                            {
+                                return PanResponse.ReturnCode(500);
+                            }
                         }
                         else
                         {
